@@ -1,8 +1,17 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import { BarChart3, CreditCard, Home, Landmark, LogOut, Settings, Shield, Wallet } from "lucide-react"
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  BarChart3,
+  CreditCard,
+  Home,
+  Landmark,
+  LogOut,
+  Settings,
+  Shield,
+  Wallet,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -17,38 +26,38 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
-import { useWallet } from "@/hooks/use-wallet"
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { useWallet } from "@/hooks/use-wallet";
 
 export function AppSidebar() {
-  const pathname = usePathname()
-  const { connected, disconnectFromWallet, connectToWallet } = useWallet()
-  const { isMobile, setOpenMobile } = useSidebar()
+  const pathname = usePathname();
+  const { connected, disconnectFromWallet, connectToWallet } = useWallet();
+  const { isMobile, setOpenMobile } = useSidebar();
 
-  const isActive = (path: string) => pathname === path
+  const isActive = (path: string) => pathname === path;
 
   const handleConnect = () => {
     if (isMobile) {
-      setOpenMobile(false)
+      setOpenMobile(false);
     }
-    connectToWallet()
-  }
+    connectToWallet();
+  };
 
   // Function to handle link clicks
   const handleLinkClick = () => {
     if (isMobile) {
-      setOpenMobile(false)
+      setOpenMobile(false);
     }
-  }
+  };
 
   // Function to handle disconnectFromWallet with sidebar closing
   const handleDisconnect = () => {
-    disconnectFromWallet()
+    disconnectFromWallet();
     if (isMobile) {
-      setOpenMobile(false)
+      setOpenMobile(false);
     }
-  }
+  };
 
   return (
     <Sidebar>
@@ -121,14 +130,23 @@ export function AppSidebar() {
       <SidebarFooter>
         {connected ? (
           <div className="p-2">
-            <Button variant="outline" className="w-full justify-start" onClick={handleDisconnect}>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={handleDisconnect}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Disconnect Wallet
             </Button>
           </div>
         ) : (
           <div className="p-2">
-            <Button variant="outline" className="w-full justify-start" onClick={handleConnect} asChild>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={handleConnect}
+              asChild
+            >
               <div>
                 <Wallet className="mr-2 h-4 w-4" />
                 Connect Wallet
@@ -138,5 +156,5 @@ export function AppSidebar() {
         )}
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

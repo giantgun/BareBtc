@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Landmark, Menu } from "lucide-react"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useWallet } from "@/hooks/use-wallet"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Landmark, Menu } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useWallet } from "@/hooks/use-wallet";
 
 export function MobileNavbar() {
-  const { connected, address } = useWallet()
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
+  const { connected, address } = useWallet();
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Handle scroll events to show/hide navbar
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
+      const currentScrollY = window.scrollY;
 
       // Show navbar when scrolling up or at the top
       if (currentScrollY <= 10 || currentScrollY < lastScrollY) {
-        setIsVisible(true)
+        setIsVisible(true);
       }
       // Hide navbar when scrolling down (beyond 10px)
       else if (currentScrollY > lastScrollY && currentScrollY > 10) {
-        setIsVisible(false)
+        setIsVisible(false);
       }
 
-      setLastScrollY(currentScrollY)
-    }
+      setLastScrollY(currentScrollY);
+    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   return (
     <div
@@ -62,5 +62,5 @@ export function MobileNavbar() {
         </div>
       </div>
     </div>
-  )
+  );
 }

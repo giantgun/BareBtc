@@ -1,11 +1,17 @@
-"use client"
+"use client";
 
-import { ArrowDown, ArrowUp, Check, Clock, X } from "lucide-react"
+import { ArrowDown, ArrowUp, Check, Clock, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useWallet } from "@/hooks/use-wallet"
-import { ConnectWallet } from "@/components/connect-wallet"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useWallet } from "@/hooks/use-wallet";
+import { ConnectWallet } from "@/components/connect-wallet";
 
 // Mock transaction data
 const transactions = [
@@ -41,26 +47,32 @@ const transactions = [
     date: new Date(),
     txId: "0x4d5e6f7g8h9i0j1a2b3c",
   },
-]
+];
 
 export function HistoryPage() {
-  const { connected } = useWallet()
+  const { connected } = useWallet();
 
   if (!connected) {
-    return <ConnectWallet />
+    return <ConnectWallet />;
   }
 
   return (
     <div className="container py-6 space-y-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold bitcoin-gradient">Transaction History</h1>
-        <p className="text-muted-foreground">View your lending and borrowing activity</p>
+        <h1 className="text-3xl font-bold bitcoin-gradient">
+          Transaction History
+        </h1>
+        <p className="text-muted-foreground">
+          View your lending and borrowing activity
+        </p>
       </div>
 
       <Card className="web3-card">
         <CardHeader>
           <CardTitle>Recent Transactions</CardTitle>
-          <CardDescription>Your recent activity on the platform</CardDescription>
+          <CardDescription>
+            Your recent activity on the platform
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -81,15 +93,24 @@ export function HistoryPage() {
                             : "bg-purple-500/20"
                     }`}
                   >
-                    {tx.type === "deposit" && <ArrowDown className={`h-5 w-5 text-green-500`} />}
-                    {tx.type === "withdraw" && <ArrowUp className={`h-5 w-5 text-orange-500`} />}
-                    {tx.type === "borrow" && <ArrowDown className={`h-5 w-5 text-blue-500`} />}
-                    {tx.type === "repay" && <ArrowUp className={`h-5 w-5 text-purple-500`} />}
+                    {tx.type === "deposit" && (
+                      <ArrowDown className={`h-5 w-5 text-green-500`} />
+                    )}
+                    {tx.type === "withdraw" && (
+                      <ArrowUp className={`h-5 w-5 text-orange-500`} />
+                    )}
+                    {tx.type === "borrow" && (
+                      <ArrowDown className={`h-5 w-5 text-blue-500`} />
+                    )}
+                    {tx.type === "repay" && (
+                      <ArrowUp className={`h-5 w-5 text-purple-500`} />
+                    )}
                   </div>
                   <div>
                     <div className="font-medium capitalize">{tx.type}</div>
                     <div className="text-sm text-muted-foreground">
-                      {tx.date.toLocaleDateString()} at {tx.date.toLocaleTimeString()}
+                      {tx.date.toLocaleDateString()} at{" "}
+                      {tx.date.toLocaleTimeString()}
                     </div>
                   </div>
                 </div>
@@ -151,7 +172,9 @@ export function HistoryPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Total Earned</span>
-                <span className="font-bold text-green-500 glow-text">0.0342 sBTC</span>
+                <span className="font-bold text-green-500 glow-text">
+                  0.0342 sBTC
+                </span>
               </div>
             </div>
           </CardContent>
@@ -178,12 +201,14 @@ export function HistoryPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Total Interest Paid</span>
-                <span className="font-bold text-orange-500 glow-text">0.0375 sBTC</span>
+                <span className="font-bold text-orange-500 glow-text">
+                  0.0375 sBTC
+                </span>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

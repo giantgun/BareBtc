@@ -72,8 +72,17 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(circle at 25% 25%, rgba(255, 153, 0, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(255, 153, 0, 0.05) 0%, transparent 50%),
+    background-image:
+      radial-gradient(
+        circle at 25% 25%,
+        rgba(255, 153, 0, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 75% 75%,
+        rgba(255, 153, 0, 0.05) 0%,
+        transparent 50%
+      ),
       linear-gradient(rgba(20, 20, 30, 0.9) 0%, rgba(10, 10, 20, 0.9) 100%);
     background-attachment: fixed;
   }
@@ -91,20 +100,36 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(to bottom right, rgba(255, 153, 0, 0.5), transparent, rgba(255, 153, 0, 0.2));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 153, 0, 0.5),
+    transparent,
+    rgba(255, 153, 0, 0.2)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
 }
 
 .web3-card-highlight::before {
-  background: linear-gradient(to bottom right, rgba(255, 153, 0, 0.8), transparent, rgba(255, 153, 0, 0.4));
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 153, 0, 0.8),
+    transparent,
+    rgba(255, 153, 0, 0.4)
+  );
 }
 
 .web3-button {
   @apply relative overflow-hidden transition-all duration-300 rounded-xl;
-  background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(30, 100%, 45%) 100%);
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary)) 0%,
+    hsl(30, 100%, 45%) 100%
+  );
 }
 
 .web3-button:hover {
@@ -128,7 +153,9 @@
 
 /* Add these new styles for softer UI */
 .soft-shadow {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .soft-glow {
@@ -146,7 +173,8 @@
 }
 
 .grid-bg {
-  background-image: linear-gradient(rgba(255, 153, 0, 0.05) 1px, transparent 1px),
+  background-image:
+    linear-gradient(rgba(255, 153, 0, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 153, 0, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
   background-position: center center;

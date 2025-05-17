@@ -1,47 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
 export function CreditScoreGauge({ score }: { score: number }) {
-  const [rotation, setRotation] = useState(0)
-  const [inView, setInView] = useState(false)
-  const gaugeRef = useRef<HTMLDivElement>(null)
+  const [rotation, setRotation] = useState(0);
+  const [inView, setInView] = useState(false);
+  const gaugeRef = useRef<HTMLDivElement>(null);
 
   // Clamp score between 0 and 1000
-  const safeScore = Math.min(1000, Math.max(0, score))
-  const targetRotation = (safeScore / 1000) * 180
+  const safeScore = Math.min(1000, Math.max(0, score));
+  const targetRotation = (safeScore / 1000) * 180;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true)
+          setInView(true);
         }
       },
-      { threshold: 0.3 }
-    )
+      { threshold: 0.3 },
+    );
 
-    if (gaugeRef.current) observer.observe(gaugeRef.current)
+    if (gaugeRef.current) observer.observe(gaugeRef.current);
 
     return () => {
-      if (gaugeRef.current) observer.unobserve(gaugeRef.current)
-    }
-  }, [])
+      if (gaugeRef.current) observer.unobserve(gaugeRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (inView) {
-      const timer = setTimeout(() => setRotation(targetRotation), 200)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setRotation(targetRotation), 200);
+      return () => clearTimeout(timer);
     }
-  }, [inView, targetRotation])
+  }, [inView, targetRotation]);
 
   const getColor = () => {
-    if (score < 300) return "#ef4444"
-    if (score < 700) return "#eab308"
-    return "#22c55e"
-  }
+    if (score < 300) return "#ef4444";
+    if (score < 700) return "#eab308";
+    return "#22c55e";
+  };
 
-  const color = getColor()
+  const color = getColor();
 
   return (
     <div ref={gaugeRef} className="relative w-48 h-24 overflow-hidden">
@@ -61,7 +61,7 @@ export function CreditScoreGauge({ score }: { score: number }) {
           }}
         >
           <div
-            className="absolute -left-1 top-0 w-3 h-3 rounded-full bg-orange-500 shadow-lg" 
+            className="absolute -left-1 top-0 w-3 h-3 rounded-full bg-orange-500 shadow-lg"
             style={{ backgroundColor: `${color}` }}
           />
         </div>
@@ -86,5 +86,5 @@ export function CreditScoreGauge({ score }: { score: number }) {
         />
       </div>
     </div>
-  )
+  );
 }
