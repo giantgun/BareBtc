@@ -99,7 +99,7 @@ export function WithdrawTab({
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">Withdraw Amount</div>
             <div className="text-sm text-muted-foreground">
-              Max: {`${currentAllocation().toPrecision(3)}`}sBTC
+              Max: {`${currentAllocation()}`}sBTC
             </div>
           </div>
           <div className="flex items-center space-x-4">
