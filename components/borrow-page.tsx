@@ -46,7 +46,7 @@ export function BorrowPage() {
 
   useEffect(() => {
     setHasActiveLoan(loanAmount > 0);
-  }, [loanAmount]);
+  }, [activeLoan.amount]);
 
   const handleBorrow = async () => {
     if (amount[0] > contractBalance) {

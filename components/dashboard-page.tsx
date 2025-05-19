@@ -54,7 +54,7 @@ export function DashboardPage() {
 
       setUserType(Math.random() > 0.5 ? "borrower" : "lender");
     }
-  }, [connected]);
+  }, [connected, activeLoan.amount]);
 
   if (!connected) {
     return <ConnectWallet />;
