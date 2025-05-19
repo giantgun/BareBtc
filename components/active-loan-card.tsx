@@ -24,6 +24,7 @@ export function ActiveLoanCard() {
     currentBlockHeight,
     repay,
     address,
+    reload
   } = useWallet();
   const [repaying, setRepaying] = useState(false);
 
@@ -62,6 +63,7 @@ export function ActiveLoanCard() {
         description: `Your have paid your loan of ${totalDue} sBTC successfully!`,
       });
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      reload()
       router.push("/");
     } catch (error) {
       toast({

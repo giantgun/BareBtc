@@ -21,7 +21,6 @@ import { ConnectWallet } from "@/components/connect-wallet";
 import { CreditScoreGauge } from "@/components/credit-score-gauge";
 import { ActiveLoanCard } from "@/components/active-loan-card";
 import { WithdrawTab } from "@/components/withdraw-tab";
-import { useToast } from "@/hooks/use-toast";
 
 export function DashboardPage() {
   const {
