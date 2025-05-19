@@ -21,6 +21,7 @@ import { ConnectWallet } from "@/components/connect-wallet";
 import { CreditScoreGauge } from "@/components/credit-score-gauge";
 import { ActiveLoanCard } from "@/components/active-loan-card";
 import { Loading } from "./ui/loading";
+import { useRouter } from "next/navigation";
 
 export function BorrowPage() {
   const {
@@ -31,9 +32,10 @@ export function BorrowPage() {
     activeLoan,
     borrow,
     poolInfo,
+    reload,
   } = useWallet();
   const { toast }: any = useToast();
-
+  const router = useRouter();
   const [amount, setAmount] = useState<number[]>([0]);
   const [borrowing, setBorrowing] = useState(false);
   const [step, setStep] = useState(1);
@@ -64,6 +66,9 @@ export function BorrowPage() {
         title: "Loan request Accepted",
         description: `The loan of ${amount[0]}sBTC has been accepted succesfully!`,
       });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      reload()
+      router.push("/");
     } catch (error: any) {
       toast({
         title: "Transaction Failed",

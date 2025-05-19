@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/use-wallet";
 import { useRouter } from "next/navigation";
+
 export function ActiveLoanCard() {
   const { toast } = useToast();
   const {
