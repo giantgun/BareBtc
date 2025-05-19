@@ -46,6 +46,8 @@ export function DashboardPage() {
   const lenderPoolBalance = lenderInfo.lenderPoolBalance || 0;
   const timeInPool = lenderInfo.timeInPool || 0;
   const unlockBlock = lenderInfo.unlockBlock || 0;
+  console.log("un", unlockBlock)
+  console.log("curr", currentBlockHeight)
 
   useEffect(() => {
     if (connected) {
@@ -223,7 +225,7 @@ export function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {creditScore === null ? (
+              {creditScore === null || loanElgibility.duration === null ? (
                 <div className="flex justify-center py-6">
                   <Loading variant="spinner" text="Loading credit factors" />
                 </div>

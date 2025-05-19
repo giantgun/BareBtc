@@ -117,11 +117,7 @@ export function ActiveLoanCard() {
             </div>
             <Progress
               value={progress}
-              className={
-                activeLoan.dueBlock! < currentBlockHeight
-                  ? `h-2 overflow-hidden bg-secondary/50 bg-gradient-to-r from-orange-500 to-red-500`
-                  : `h-2 overflow-hidden bg-secondary/50 bg-gradient-to-r from-yellow-500 to-orange-500`
-              }
+              className="h-2"
             />
           </div>
         </div>
