@@ -307,15 +307,6 @@ export function LendPage() {
                 </>
               )}
             </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full web3-input"
-                onClick={() => router.push("/history")}
-              >
-                View Transaction History
-              </Button>
-            </CardFooter>
           </Card>
         </div>
       </div>
