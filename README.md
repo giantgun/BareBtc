@@ -4,7 +4,6 @@ This is the frontend application for interacting with the [sBTC Lending Pool](ht
 
 Built with **Next.js** and **Stacks.js**, this app allows users to:
 
-- Connect their Stacks wallet  
 - Supply sBTC to earn yield  
 - Borrow sBTC using a decentralized credit score  
 
