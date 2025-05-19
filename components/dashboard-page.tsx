@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CreditCard, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 
 import { Loading } from "@/components/ui/loading";
 import { Button } from "@/components/ui/button";
@@ -46,8 +46,6 @@ export function DashboardPage() {
   const lenderPoolBalance = lenderInfo.lenderPoolBalance || 0;
   const timeInPool = lenderInfo.timeInPool || 0;
   const unlockBlock = lenderInfo.unlockBlock || 0;
-  console.log("un", unlockBlock)
-  console.log("curr", currentBlockHeight)
 
   useEffect(() => {
     if (connected) {
@@ -323,7 +321,7 @@ export function DashboardPage() {
               </CardFooter>
             </Card>
 
-            {lenderInfo.lenderBalance === null ? (
+            {lenderInfo.lenderBalance === null || currentBlockHeight === 0 ? (
               <Card className="web3-card">
                 <CardHeader>
                   <CardTitle>Loading Data</CardTitle>
