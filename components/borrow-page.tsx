@@ -67,7 +67,7 @@ export function BorrowPage() {
         description: `The loan of ${amount[0]}sBTC has been accepted succesfully!`,
       });
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      reload()
+      reload();
       router.push("/");
     } catch (error: any) {
       toast({
@@ -94,8 +94,14 @@ export function BorrowPage() {
 
   return (
     <div className="container py-6 space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold bitcoin-gradient">Borrow sBTC</h1>
+      <div
+        className="flex flex-col gap-2"
+        role="region"
+        aria-labelledby="borrow-heading"
+      >
+        <h1 id="borrow-heading" className="text-3xl font-bold bitcoin-gradient">
+          Borrow sBTC
+        </h1>
         <p className="text-muted-foreground">
           Request a loan based on your credit score
         </p>
@@ -104,7 +110,12 @@ export function BorrowPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           {loanElgibility.loanLimit === null ? (
-            <Card className="web3-card">
+            <Card
+              className="web3-card"
+              role="status"
+              aria-busy="true"
+              aria-live="polite"
+            >
               <CardHeader>
                 <CardTitle>Loading Loan Information</CardTitle>
                 <CardDescription>
@@ -112,7 +123,12 @@ export function BorrowPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="py-12 flex justify-center">
-                <Loading variant="spinner" text="Loading loan information" />
+                <div className="sr-only">Loading loan information...</div>
+                <Loading
+                  variant="spinner"
+                  text="Loading loan information"
+                  aria-hidden="true"
+                />
               </CardContent>
             </Card>
           ) : hasActiveLoan ? (
@@ -120,8 +136,8 @@ export function BorrowPage() {
           ) : (
             <Card className="web3-card">
               <CardHeader>
-                <CardTitle>Request a Loan</CardTitle>
-                <CardDescription>
+                <CardTitle id="loan-request-title">Request a Loan</CardTitle>
+                <CardDescription aria-live="polite">
                   {step === 1
                     ? "Select your loan amount"
                     : step === 2
@@ -139,7 +155,11 @@ export function BorrowPage() {
                           Max: {maxLoanAmount} sBTC
                         </div>
                       </div>
-                      <form className="flex items-center space-x-4">
+                      <form
+                        className="flex items-center space-x-4"
+                        role="group"
+                        aria-labelledby="amount"
+                      >
                         <Slider
                           id="amount"
                           max={maxLoanAmount}
@@ -147,6 +167,7 @@ export function BorrowPage() {
                           value={amount}
                           onValueChange={(value: number[]) => setAmount(value)}
                           disabled={maxLoanAmount <= 0}
+                          aria-valuetext={`${amount[0]} sBTC`}
                         />
                         <Input
                           type="number"
@@ -156,34 +177,26 @@ export function BorrowPage() {
                           step={0.00000001}
                           className="w-24"
                           disabled={maxLoanAmount == 0}
+                          aria-label="Loan amount input in sBTC"
                         />
                       </form>
                     </div>
 
-                    <Alert>
-                      <Info className="h-4 w-4" />
+                    <Alert role="note">
                       <AlertTitle>Loan Terms</AlertTitle>
                       <AlertDescription>
-                        <div className="mt-2 text-sm space-y-1">
-                          <div className="flex justify-between">
-                            <span>Interest Rate:</span>
-                            <span>{interestRate?.toFixed(1)}%</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Term Length:</span>
-                            <span>{`${loanElgibility.duration} `}days</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Total Repayment:</span>
-                            <span>
-                              {(
-                                amount[0] *
-                                (1 + interestRate! / 100)
-                              ).toPrecision(3)}{" "}
-                              sBTC
-                            </span>
-                          </div>
-                        </div>
+                        <ul className="mt-2 text-sm space-y-1">
+                          <li>Interest Rate: {interestRate?.toFixed(1)}%</li>
+                          <li>Term Length: {loanElgibility.duration} days</li>
+                          <li>
+                            Total Repayment:{" "}
+                            {(
+                              amount[0] *
+                              (1 + interestRate! / 100)
+                            ).toPrecision(3)}{" "}
+                            sBTC
+                          </li>
+                        </ul>
                       </AlertDescription>
                     </Alert>
                   </div>
@@ -234,13 +247,11 @@ export function BorrowPage() {
                       </div>
                     </div>
 
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
+                    <Alert variant="destructive" role="alert">
                       <AlertTitle>Important</AlertTitle>
                       <AlertDescription>
                         Failure to repay your loan on time will negatively
-                        impact your credit score and may result in additional
-                        fees.
+                        impact your credit score.
                       </AlertDescription>
                     </Alert>
                   </div>
@@ -311,6 +322,7 @@ export function BorrowPage() {
                     variant="outline"
                     onClick={prevStep}
                     className="web3-input"
+                    aria-label="Go back to previous step"
                   >
                     Back
                   </Button>
@@ -327,6 +339,7 @@ export function BorrowPage() {
                       amount[0] > maxLoanAmount ||
                       amount[0] == 0
                     }
+                    aria-label="Proceed to next step"
                   >
                     Continue <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -335,6 +348,7 @@ export function BorrowPage() {
                     onClick={handleBorrow}
                     disabled={borrowing}
                     className="web3-button"
+                    aria-label="Submit your loan request to the blockchain"
                   >
                     {borrowing ? "Processing..." : "Submit Loan Request"}
                   </Button>
@@ -345,27 +359,54 @@ export function BorrowPage() {
         </div>
 
         <div>
-          <Card className="web3-card web3-card-highlight">
+          <Card
+            className="web3-card web3-card-highlight"
+            role="region"
+            aria-labelledby="credit-score-title"
+          >
             <CardHeader>
-              <CardTitle>Credit Score</CardTitle>
+              <CardTitle id="credit-score-title">Credit Score</CardTitle>
               <CardDescription>Your borrowing power</CardDescription>
             </CardHeader>
+
             <CardContent className="flex justify-center py-6">
               {creditScore === null ? (
-                <Loading variant="bitcoin" text="Loading credit score" />
+                <>
+                  <div className="sr-only" role="status" aria-live="polite">
+                    Loading credit score...
+                  </div>
+                  <Loading
+                    variant="bitcoin"
+                    text="Loading credit score"
+                    aria-hidden="true"
+                  />
+                </>
               ) : (
-                <CreditScoreGauge score={creditScore} />
+                <CreditScoreGauge
+                  score={creditScore}
+                  aria-label={`Credit score: ${creditScore}`}
+                />
               )}
             </CardContent>
+
             <CardFooter className="flex flex-col space-y-4">
               {interestRate === null ? (
-                <Loading
-                  variant="dots"
-                  size="sm"
-                  text="Loading eligibility data"
-                />
+                <>
+                  <div className="sr-only" role="status" aria-live="polite">
+                    Loading loan eligibility data...
+                  </div>
+                  <Loading
+                    variant="dots"
+                    size="sm"
+                    text="Loading eligibility data"
+                    aria-hidden="true"
+                  />
+                </>
               ) : (
-                <div className="w-full text-sm space-y-2">
+                <div
+                  className="w-full text-sm space-y-2"
+                  aria-label="Loan eligibility details"
+                >
                   <div className="flex justify-between">
                     <span>Max Loan Amount:</span>
                     <span className="font-medium">

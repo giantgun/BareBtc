@@ -39,8 +39,16 @@ export function MobileNavbar() {
       }`}
     >
       <div className="flex items-center justify-between p-4 bg-card/80 backdrop-blur-md border-b border-border/30 soft-shadow">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 shadow-lg shadow-orange-500/20">
+        <Link
+          href="/"
+          className="flex items-center gap-2"
+          aria-label="Go to homepage"
+        >
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 shadow-lg shadow-orange-500/20"
+            role="img"
+            aria-label="BareBTC Logo"
+          >
             <Landmark className="h-4 w-4 text-white" />
           </div>
           <div className="font-bold bitcoin-gradient">BareBTC</div>
@@ -48,14 +56,20 @@ export function MobileNavbar() {
 
         <div className="flex items-center gap-3">
           {connected && (
-            <div className="text-xs text-right truncate text-muted-foreground px-2 py-1 rounded-full bg-secondary/30">
+            <div
+              className="text-xs text-right truncate text-muted-foreground px-2 py-1 rounded-full bg-secondary/30"
+              aria-label={`Connected wallet address: ${address}`}
+            >
               {address?.slice(0, 4)}...{address?.slice(-4)}
             </div>
           )}
 
           <SidebarTrigger>
-            <button className="p-2 rounded-full bg-secondary/50 hover:bg-secondary/70 transition-colors soft-glow text-orange-400">
-              <Menu className="h-7 w-7 " aria-label="Menu" />
+            <button
+              className="p-2 rounded-full bg-secondary/50 hover:bg-secondary/70 transition-colors soft-glow text-orange-400"
+              aria-label="Open menu"
+            >
+              <Menu className="h-7 w-7" />
               <span className="sr-only">Toggle Menu</span>
             </button>
           </SidebarTrigger>

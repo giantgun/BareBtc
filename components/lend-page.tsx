@@ -131,10 +131,24 @@ export function LendPage() {
                 defaultValue={activeTab}
                 onValueChange={setActiveTab}
                 className="w-full"
+                role="tablist"
+                aria-label="Lending pool actions"
               >
                 <TabsList className="grid w-full grid-cols-2 bg-secondary/50 backdrop-blur-sm">
-                  <TabsTrigger value="deposit">Deposit</TabsTrigger>
-                  <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
+                  <TabsTrigger
+                    value="deposit"
+                    role="tab"
+                    aria-selected={activeTab === "deposit"}
+                  >
+                    Deposit
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="withdraw"
+                    role="tab"
+                    aria-selected={activeTab === "withdraw"}
+                  >
+                    Withdraw
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="deposit" className="mt-4">
@@ -177,9 +191,15 @@ export function LendPage() {
                             step={0.1}
                             value={[depositAmount]}
                             onValueChange={handleDepositAmountChange}
+                            aria-valuemin={1}
+                            aria-valuemax={balance!}
+                            aria-valuenow={depositAmount}
+                            aria-label="Deposit amount in sBTC"
                           />
                           <Input
                             type="number"
+                            aria-label="Deposit amount input"
+                            aria-describedby="deposit-helper"
                             value={depositAmount}
                             onChange={(e) =>
                               setDepositAmount(Number(e.target.value))
@@ -198,7 +218,7 @@ export function LendPage() {
                         <AlertDescription>
                           <div className="mt-2 text-sm space-y-1">
                             <div className="flex justify-between">
-                              <span>Current pool APY:</span>
+                              <span>Pool APY:</span>
                               <span
                                 className={
                                   contractBalance > poolSize
@@ -206,7 +226,10 @@ export function LendPage() {
                                     : "text-red-500"
                                 }
                               >
-                                {poolApy.toPrecision(2)}%
+                                {poolApy.toPrecision(2)}% —{" "}
+                                {contractBalance > poolSize
+                                  ? "Profitable"
+                                  : "Unprofitable"}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -231,6 +254,8 @@ export function LendPage() {
                         depositAmount < 1 ||
                         depositAmount > balance!
                       }
+                      aria-busy={processing}
+                      aria-label="Deposit sBTC into the lending pool"
                     >
                       {processing ? (
                         "Processing..."
@@ -300,7 +325,10 @@ export function LendPage() {
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">Your Share:</span>
                       <span className="font-bold">
-                        {(currentDeposit / (poolSize || 1)) * 100}%
+                        {((currentDeposit / (poolSize || 1)) * 100).toPrecision(
+                          2,
+                        )}
+                        %
                       </span>
                     </div>
                   </div>

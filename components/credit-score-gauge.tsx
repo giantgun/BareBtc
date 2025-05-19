@@ -44,12 +44,23 @@ export function CreditScoreGauge({ score }: { score: number }) {
   const color = getColor();
 
   return (
-    <div ref={gaugeRef} className="relative w-48 h-24 overflow-hidden">
+    <div
+      ref={gaugeRef}
+      className="relative w-48 h-24 overflow-hidden"
+      role="img"
+      aria-label={`Credit score gauge showing a score of ${score} out of 100`}
+    >
       {/* Gauge background */}
-      <div className="absolute w-full h-full rounded-t-full overflow-hidden bg-gray-800/50 backdrop-blur-sm z-0" />
+      <div
+        className="absolute w-full h-full rounded-t-full overflow-hidden bg-gray-800/50 backdrop-blur-sm z-0"
+        aria-hidden="true"
+      />
 
       {/* Needle */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+      <div
+        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10"
+        aria-hidden="true"
+      >
         <div
           className="relative w-1 h-20 bg-orange-500 rounded-t-full"
           style={{
@@ -61,21 +72,32 @@ export function CreditScoreGauge({ score }: { score: number }) {
           }}
         >
           <div
-            className="absolute -left-1 top-0 w-3 h-3 rounded-full bg-orange-500 shadow-lg"
+            className="absolute -left-1 top-0 w-3 h-3 rounded-full shadow-lg"
             style={{ backgroundColor: `${color}` }}
           />
         </div>
         <div className="w-1 h-2 rounded-full bg-yellow-500 shadow-lg -mt-2" />
       </div>
 
-      {/* Score */}
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-center z-20">
-        <div className="text-2xl font-bold glow-text">{score}</div>
+      {/* Score Label (visually and for screen readers) */}
+      <div
+        className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-center z-20"
+        aria-hidden="false"
+      >
+        <div
+          className="text-2xl font-bold glow-text"
+          aria-label={`Credit score is ${score}`}
+        >
+          {score}
+        </div>
         <div className="text-xs text-muted-foreground">Credit Score</div>
       </div>
 
-      {/* Markers */}
-      <div className="absolute bottom-0 left-0 w-full h-full z-20">
+      {/* Markers (optional color-blind friendly tweaks below) */}
+      <div
+        className="absolute bottom-0 left-0 w-full h-full z-20"
+        aria-hidden="true"
+      >
         <div
           className="absolute bottom-0 w-1 h-2 bg-red-500 origin-bottom"
           style={{ left: "25%", transform: "rotate(-45deg)" }}

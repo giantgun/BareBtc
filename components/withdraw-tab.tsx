@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/use-wallet";
 import { request } from "@stacks/connect";
 import { Cl, PostCondition } from "@stacks/transactions";
+import { Label } from "./ui/label";
 
 export function WithdrawTab({
   depositAmount,
@@ -97,7 +98,9 @@ export function WithdrawTab({
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium">Withdraw Amount</div>
+            <Label htmlFor="withdraw-amount" className="text-sm font-medium">
+              Withdraw Amount
+            </Label>
             <div className="text-sm text-muted-foreground">
               Max: {`${currentAllocation()}`}sBTC
             </div>
@@ -112,12 +115,17 @@ export function WithdrawTab({
               disabled={withdrawing || depositAmount <= 0}
             />
             <Input
+              id="withdraw-amount"
+              aria-label="Withdraw amount slider"
+              aria-valuemin={0}
+              aria-valuemax={depositAmount}
+              aria-valuenow={amount}
               type="number"
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               max={depositAmount}
               min={0}
-              step={depositAmount / 100}
+              step={Math.max(depositAmount / 100, 0.001)}
               className="w-24"
               disabled={withdrawing || depositAmount <= 0}
             />
@@ -138,6 +146,13 @@ export function WithdrawTab({
           className="w-full web3-button"
           onClick={handleWithdraw}
           disabled={withdrawing || amount <= 0 || amount > currentAllocation()}
+          title={
+            amount <= 0
+              ? "Enter a valid withdrawal amount"
+              : amount > currentAllocation()
+                ? "Amount exceeds available balance"
+                : ""
+          }
         >
           {withdrawing ? (
             "Processing..."

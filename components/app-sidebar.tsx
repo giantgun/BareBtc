@@ -60,41 +60,63 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar role="navigation" aria-label="Main sidebar">
       <SidebarHeader className="flex items-center px-4 py-2">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 shadow-lg shadow-orange-500/20">
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 shadow-lg shadow-orange-500/20"
+            aria-hidden="true"
+          >
             <Landmark className="h-4 w-4 text-white" />
           </div>
-          <div className="font-bold bitcoin-gradient">BareBTC</div>
+          <div className="font-bold bitcoin-gradient" aria-label="BareBTC logo">
+            BareBTC
+          </div>
         </div>
       </SidebarHeader>
+
       <SidebarSeparator />
+
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="sr-only">Navigation</SidebarGroupLabel>
+
           <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/")}>
+            <SidebarMenu role="menu">
+              <SidebarMenuItem role="none">
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/")}
+                  role="menuitem"
+                >
                   <Link href="/" onClick={handleLinkClick}>
-                    <Home className="h-4 w-4" />
+                    <Home className="h-4 w-4" aria-hidden="true" />
                     <span>Dashboard</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/borrow")}>
+
+              <SidebarMenuItem role="none">
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/borrow")}
+                  role="menuitem"
+                >
                   <Link href="/borrow" onClick={handleLinkClick}>
-                    <CreditCard className="h-4 w-4" />
+                    <CreditCard className="h-4 w-4" aria-hidden="true" />
                     <span>Borrow</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/lend")}>
+
+              <SidebarMenuItem role="none">
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/lend")}
+                  role="menuitem"
+                >
                   <Link href="/lend" onClick={handleLinkClick}>
-                    <Landmark className="h-4 w-4" />
+                    <Landmark className="h-4 w-4" aria-hidden="true" />
                     <span>Lend</span>
                   </Link>
                 </SidebarMenuButton>
@@ -102,35 +124,34 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
         <SidebarSeparator />
       </SidebarContent>
+
       <SidebarFooter>
-        {connected ? (
-          <div className="p-2">
+        <div className="p-2">
+          {connected ? (
             <Button
               variant="outline"
               className="w-full justify-start"
               onClick={handleDisconnect}
+              aria-label="Disconnect wallet"
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
               Disconnect Wallet
             </Button>
-          </div>
-        ) : (
-          <div className="p-2">
+          ) : (
             <Button
               variant="outline"
               className="w-full justify-start"
               onClick={handleConnect}
-              asChild
+              aria-label="Connect wallet"
             >
-              <div>
-                <Wallet className="mr-2 h-4 w-4" />
-                Connect Wallet
-              </div>
+              <Wallet className="mr-2 h-4 w-4" aria-hidden="true" />
+              Connect Wallet
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
