@@ -32,6 +32,7 @@ import {
   TupleCV,
 } from "@stacks/transactions";
 import { request } from "@stacks/connect";
+import { Loading } from "./ui/loading";
 
 export function LendPage() {
   const {
@@ -43,7 +44,6 @@ export function LendPage() {
     poolContractName,
     sbtcTokenContractAddress,
     address,
-    reload,
   } = useWallet();
   const router = useRouter();
   const { toast } = useToast();
@@ -52,22 +52,21 @@ export function LendPage() {
   const [processing, setProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("deposit");
 
-  const currentDeposit = lenderInfo.lenderBalance;
-  const poolSize = poolInfo.poolSize;
-  const poolApy =
-    ((poolInfo.poolSize - poolInfo.contractBalance) /
-      (poolInfo.poolSize || 1)) *
-    100;
+  const currentDeposit = lenderInfo.lenderBalance || 0;
+  const lenderPoolBalance = lenderInfo.lenderPoolBalance || 0;
+  const poolSize = poolInfo.poolSize || 0;
+  const contractBalance = poolInfo.contractBalance || 0;
+  const poolApy = ((contractBalance - poolSize) / (poolSize || 1)) * 100;
 
   const handleDepositAmountChange = (value: number[]) => {
     setDepositAmount(value[0]);
   };
 
   const handleDeposit = async () => {
-    if (depositAmount > balance) {
+    if (depositAmount > balance!) {
       toast({
         title: "Insufficient Balance",
-        description: `You only have ${balance.toFixed(4)} sBTC available.`,
+        description: `You only have ${balance!.toFixed(4)} sBTC available.`,
         variant: "destructive",
       });
       return;
@@ -100,11 +99,10 @@ export function LendPage() {
 
       // Navigate back to dashboard
       router.push("/");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
       toast({
         title: "Transaction Failed",
-        description: "Failed to deposit. Please try again.",
+        description: `${error.message}`,
         variant: "destructive",
       });
     } finally {
@@ -153,96 +151,108 @@ export function LendPage() {
               </Tabs>
             </CardHeader>
 
-            <Tabs value={activeTab}>
-              <TabsContent value="deposit" className="space-y-4">
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="deposit-amount">
-                          Deposit Amount (sBTC)
-                        </Label>
-                        <div className="text-sm text-muted-foreground">
-                          Balance: {balance.toPrecision(3)} sBTC
+            {balance === null ? (
+              <CardContent className="py-12 flex justify-center">
+                <Loading variant="spinner" text="Loading lending pool data" />
+              </CardContent>
+            ) : (
+              <Tabs value={activeTab}>
+                <TabsContent value="deposit" className="space-y-4">
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="deposit-amount">
+                            Deposit Amount (sBTC)
+                          </Label>
+                          <div className="text-sm text-muted-foreground">
+                            Balance: {balance!.toPrecision(3)} sBTC
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <Slider
+                            id="deposit-amount"
+                            max={balance!}
+                            min={1}
+                            step={0.1}
+                            value={[depositAmount]}
+                            onValueChange={handleDepositAmountChange}
+                          />
+                          <Input
+                            type="number"
+                            value={depositAmount}
+                            onChange={(e) =>
+                              setDepositAmount(Number(e.target.value))
+                            }
+                            max={balance!}
+                            min={0.01}
+                            step={0.01}
+                            className="w-24"
+                          />
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <Slider
-                          id="deposit-amount"
-                          max={balance}
-                          min={1}
-                          step={0.1}
-                          value={[depositAmount]}
-                          onValueChange={handleDepositAmountChange}
-                        />
-                        <Input
-                          type="number"
-                          value={depositAmount}
-                          onChange={(e) =>
-                            setDepositAmount(Number(e.target.value))
-                          }
-                          max={balance}
-                          min={0.01}
-                          step={0.01}
-                          className="w-24"
-                        />
-                      </div>
+
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertTitle>Deposit Information</AlertTitle>
+                        <AlertDescription>
+                          <div className="mt-2 text-sm space-y-1">
+                            <div className="flex justify-between">
+                              <span>Current pool APY:</span>
+                              <span
+                                className={
+                                  contractBalance > poolSize
+                                    ? "text-green-500"
+                                    : "text-red-500"
+                                }
+                              >
+                                {poolApy.toPrecision(2)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Current pool balance:</span>
+                              <span>{currentDeposit.toPrecision(3)} sBTC</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Pool size:</span>
+                              <span>{poolSize.toPrecision(3)} sBTC</span>
+                            </div>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
                     </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      className="w-full web3-button"
+                      onClick={handleDeposit}
+                      disabled={
+                        processing ||
+                        depositAmount < 1 ||
+                        depositAmount > balance!
+                      }
+                    >
+                      {processing ? (
+                        "Processing..."
+                      ) : (
+                        <>
+                          <ArrowUp className="mr-2 h-4 w-4" />
+                          Deposit sBTC
+                        </>
+                      )}
+                    </Button>
+                  </CardFooter>
+                </TabsContent>
 
-                    <Alert>
-                      <Info className="h-4 w-4" />
-                      <AlertTitle>Deposit Information</AlertTitle>
-                      <AlertDescription>
-                        <div className="mt-2 text-sm space-y-1">
-                          <div className="flex justify-between">
-                            <span>Current pool APY:</span>
-                            <span className="text-green-500">
-                              {poolApy.toPrecision(2)}%
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Current pool balance:</span>
-                            <span>
-                              {lenderInfo.lenderBalance.toPrecision(3)} sBTC
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Pool size:</span>
-                            <span>{poolInfo.poolSize.toPrecision(3)} sBTC</span>
-                          </div>
-                        </div>
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className="w-full web3-button"
-                    onClick={handleDeposit}
-                    disabled={
-                      processing || depositAmount < 1 || depositAmount > balance
-                    }
-                  >
-                    {processing ? (
-                      "Processing..."
-                    ) : (
-                      <>
-                        <ArrowUp className="mr-2 h-4 w-4" />
-                        Deposit sBTC
-                      </>
-                    )}
-                  </Button>
-                </CardFooter>
-              </TabsContent>
-
-              <TabsContent value="withdraw" className="space-y-4">
-                <WithdrawTab
-                  depositAmount={currentDeposit}
-                  depositPoolBalance={lenderInfo.lenderPoolBalance}
-                  onWithdraw={() => router.push("/")}
-                />
-              </TabsContent>
-            </Tabs>
+                <TabsContent value="withdraw" className="space-y-4">
+                  <WithdrawTab
+                    depositAmount={currentDeposit}
+                    depositPoolBalance={lenderPoolBalance}
+                    onWithdraw={() => router.push("/")}
+                  />
+                </TabsContent>
+              </Tabs>
+            )}
           </Card>
         </div>
 
@@ -255,33 +265,47 @@ export function LendPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex flex-col items-center justify-center py-4">
-                <div className="text-4xl font-bold text-green-500 glow-text">
-                  {poolApy.toPrecision(2)}%
+              {poolInfo.poolSize === null ? (
+                <div className="flex justify-center py-6">
+                  <Loading variant="bitcoin" text="Loading pool stats" />
                 </div>
-                <div className="text-sm text-muted-foreground">Current APY</div>
-              </div>
+              ) : (
+                <>
+                  <div className="flex flex-col items-center justify-center py-4">
+                    <div
+                      className={`text-4xl font-bold glow-text ${contractBalance > poolSize ? "text-green-500" : "text-red-500"}`}
+                    >
+                      {poolApy.toPrecision(2)}%
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Current APY
+                    </div>
+                  </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Total Pool Size:</span>
-                  <span className="font-bold">
-                    {poolSize.toPrecision(3)} sBTC
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Your Deposit:</span>
-                  <span className="font-bold">
-                    {currentDeposit.toPrecision(3)} sBTC
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Your Share:</span>
-                  <span className="font-bold">
-                    {(currentDeposit / (poolSize || 1)) * 100}%
-                  </span>
-                </div>
-              </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">
+                        Total Pool Size:
+                      </span>
+                      <span className="font-bold">
+                        {poolSize.toPrecision(3)} sBTC
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">Your Deposit:</span>
+                      <span className="font-bold">
+                        {currentDeposit.toPrecision(3)} sBTC
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">Your Share:</span>
+                      <span className="font-bold">
+                        {(currentDeposit / (poolSize || 1)) * 100}%
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
             </CardContent>
             <CardFooter>
               <Button

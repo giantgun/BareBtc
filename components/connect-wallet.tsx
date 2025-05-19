@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Landmark, Wallet } from "lucide-react";
+import { Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,17 +12,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useWallet } from "@/hooks/use-wallet";
+import { useToast } from "@/hooks/use-toast";
 
 export function ConnectWallet() {
   const { connectToWallet, connecting } = useWallet();
   const [isConnecting, setIsConnecting] = useState(false);
+  const { toast } = useToast();
 
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
       await connectToWallet();
-    } catch (error) {
-      console.error("Connection failed:", error);
+    } catch (error: any) {
+      toast({
+        title: "Transaction Failed",
+        description: `${error.message}`,
+        variant: "destructive",
+      });
     } finally {
       setIsConnecting(false);
     }

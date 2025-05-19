@@ -7,7 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   connect,
   disconnect,
@@ -23,8 +23,6 @@ import {
   UIntCV,
   cvToJSON,
   cvToValue,
-  cvToString,
-  deserializeCV,
   PostCondition,
 } from "@stacks/transactions";
 
@@ -32,9 +30,8 @@ type WalletContextType = {
   connected: boolean | null;
   connecting: boolean;
   address: string | null;
-  balance: number | 0;
-  stxBalance: number | 0;
-  creditScore: number;
+  balance: number | null;
+  creditScore: number | null;
   timePerBlock: number;
   currentBlockHeight: number;
   isLoading: boolean;
@@ -44,33 +41,33 @@ type WalletContextType = {
   borrow: (amount: number) => Promise<string>;
   repay: (totalDue: number, address: string) => Promise<string>;
   activeLoan: {
-    amount: number;
-    issuedBlock: number;
-    dueBlock: number;
-    interestRate: number;
-    totalDue: number;
+    amount: number | null;
+    issuedBlock: number | null;
+    dueBlock: number | null;
+    interestRate: number | null;
+    totalDue: number | null;
   };
   accountData: {
-    totalLoans: number;
-    onTimeLoans: number;
-    lateLoans: number;
+    totalLoans: number | null;
+    onTimeLoans: number | null;
+    lateLoans: number | null;
   };
   loanElgibility: {
-    loanLimit: number;
-    interestRate: number;
-    duration: number;
+    loanLimit: number | null;
+    interestRate: number | null;
+    duration: number | null;
   };
   lenderInfo: {
-    lenderBalance: number;
-    lenderPoolBalance: number;
-    lockedBlock: number;
-    unlockBlock: number;
-    timeInPool: number;
+    lenderBalance: number | null;
+    lenderPoolBalance: number | null;
+    lockedBlock: number | null;
+    unlockBlock: number | null;
+    timeInPool: number | null;
   };
   poolInfo: {
-    lockDuration: number;
-    poolSize: number;
-    contractBalance: number;
+    lockDuration: number | null;
+    poolSize: number | null;
+    contractBalance: number | null;
   };
   poolContractName: string;
   poolContractAdrress: string;
@@ -81,8 +78,7 @@ const WalletContext = createContext<WalletContextType>({
   connected: false,
   connecting: false,
   address: null,
-  balance: 0,
-  stxBalance: 0,
+  balance: null,
   timePerBlock: 600,
   currentBlockHeight: 0,
   isLoading: true,
@@ -131,40 +127,47 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [connecting, setConnecting] = useState(false);
   const [reloadData, setReloadData] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
-  const [balance, setBalance] = useState<number>(0);
-  const [stxBalance, setStxBalance] = useState<number>(0);
-  const [creditScore, setCreditScore] = useState<number>(0);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [creditScore, setCreditScore] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [lenderInfo, setLenderInfo] = useState({
-    lenderBalance: 0,
-    lenderPoolBalance: 0,
-    lockedBlock: 0,
-    unlockBlock: 0,
-    timeInPool: 0,
+  const [lenderInfo, setLenderInfo] = useState<WalletContextType["lenderInfo"]>(
+    {
+      lenderBalance: null,
+      lenderPoolBalance: null,
+      lockedBlock: null,
+      unlockBlock: null,
+      timeInPool: null,
+    },
+  );
+  const [poolInfo, setPoolInfo] = useState<WalletContextType["poolInfo"]>({
+    lockDuration: null,
+    poolSize: null,
+    contractBalance: null,
   });
-  const [poolInfo, setPoolInfo] = useState({
-    lockDuration: 0,
-    poolSize: 0,
-    contractBalance: 0,
-  });
-  const [loanElgibility, setLoanElgibility] = useState({
-    loanLimit: 0,
-    interestRate: 0,
-    duration: 0,
+  const [loanElgibility, setLoanElgibility] = useState<
+    WalletContextType["loanElgibility"]
+  >({
+    loanLimit: null,
+    interestRate: null,
+    duration: null,
   });
   const [currentBlockHeight, setCurrentBlockHeight] = useState<number>(0);
   const timePerBlock = 600;
-  const [activeLoan, setActiveLoan] = useState({
-    amount: 0,
-    issuedBlock: 0,
-    dueBlock: 0,
-    interestRate: 0,
-    totalDue: 0,
-  });
-  const [accountData, setAccountData] = useState({
-    totalLoans: 0,
-    onTimeLoans: 0,
-    lateLoans: 0,
+  const [activeLoan, setActiveLoan] = useState<WalletContextType["activeLoan"]>(
+    {
+      amount: null,
+      issuedBlock: null,
+      dueBlock: null,
+      interestRate: null,
+      totalDue: null,
+    },
+  );
+  const [accountData, setAccountData] = useState<
+    WalletContextType["accountData"]
+  >({
+    totalLoans: null,
+    onTimeLoans: null,
+    lateLoans: null,
   });
   const { toast } = useToast();
   const sbtcTokenContractAddress = "ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT";
@@ -177,12 +180,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   // SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token mainnet contract
   const getSbtcBalance = async (address: string) => {
-    const stxBalance = await fetch(
-      `https://api.hiro.so/extended/v2/addresses/${address}/balances/stx?include_mempool=false`,
-      {
-        method: "GET",
-      },
-    );
     const options = {
       contractAddress: sbtcTokenContractAddress,
       contractName: "sbtc-token",
@@ -195,8 +192,26 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       options,
     )) as ResponseOkCV<UIntCV>;
     setBalance(Number(balance.value.value) / 100000000);
-    setStxBalance(Number(stxBalance));
     return Number(balance.value.value) / 100000000;
+  };
+
+  const getCurrentBlockHeight = async (address: string) => {
+    const options = {
+      contractAddress: poolContractAdrress,
+      contractName: poolContractName,
+      functionName: "get-block-height",
+      functionArgs: [Cl.standardPrincipal(address)],
+      network: "testnet" as "testnet",
+      senderAddress: address,
+    };
+    const info = (await fetchCallReadOnlyFunction(
+      options,
+    )) as ResponseOkCV<UIntCV>;
+
+    const blockHeight = info.value.value as any;
+    const currentBlockHeight = Number(blockHeight.stacks_block_height.value);
+    setCurrentBlockHeight(currentBlockHeight);
+    return info;
   };
 
   const getLoanLimitInfo = async (address: string) => {
@@ -268,24 +283,36 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         onTimeLoans,
         lateLoans,
       });
+    }
+    if (accountData.type !== "none") {
+      const totalLoans = Number(
+        accountData.value.value.total_loans.value || Cl.uint(0),
+      );
+      const onTimeLoans = Number(
+        accountData.value.value.on_time_loans.value || Cl.uint(0),
+      );
+      const lateLoans = Number(
+        accountData.value.value.late_loans.value || Cl.uint(0),
+      );
+
+      setAccountData({
+        totalLoans,
+        onTimeLoans,
+        lateLoans,
+      });
+
       return info;
     }
     const totalDue =
       Number(cvToValue(info.value.value.repayment_amount_due)) / 100000000;
-    const amount = Number(0) / 100000000;
-    const dueBlock = Number(0);
-    const issuedBlock = Number(0);
-    const interestRate = Number(0);
+    const amount = 0;
+    const dueBlock = 0;
+    const issuedBlock = 0;
+    const interestRate = 0;
 
-    const totalLoans = Number(
-      accountData.value.value.total_loans.value || Cl.uint(0),
-    );
-    const onTimeLoans = Number(
-      accountData.value.value.on_time_loans.value || Cl.uint(0),
-    );
-    const lateLoans = Number(
-      accountData.value.value.late_loans.value || Cl.uint(0),
-    );
+    const totalLoans = 0;
+    const onTimeLoans = 0;
+    const lateLoans = 0;
 
     setActiveLoan({
       amount,
@@ -303,16 +330,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   };
 
   const getLoanEligibility = async (address: string) => {
-    const options1 = {
-      contractAddress: poolContractAdrress,
-      contractName: poolContractName,
-      functionName: "get-loan-eligibility-info",
-      functionArgs: [Cl.standardPrincipal(address)],
-      network: "testnet" as "testnet",
-      senderAddress: address,
-    };
-    const info1 = (await fetchCallReadOnlyFunction(options1)) as any;
-
     const options = {
       contractAddress: poolContractAdrress,
       contractName: poolContractName,
@@ -379,17 +396,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   };
 
   const initializeInfo = async (userAddress: string) => {
-    setIsLoading(true);
-    await getLoanEligibility(userAddress);
-    await getLendInfo(userAddress);
-    await getSbtcBalance(userAddress);
-    await getLoanLimitInfo(userAddress);
-    await getBorrowerInfo(userAddress);
-    setCurrentBlockHeight(
-      (lenderInfo.timeInPool * 60 * 60 * 24) / timePerBlock +
-        lenderInfo.lockedBlock,
-    );
-    setIsLoading(false);
+    try {
+      await getSbtcBalance(userAddress);
+      await getLoanEligibility(userAddress);
+      await getLendInfo(userAddress);
+      await getLoanLimitInfo(userAddress);
+      await getCurrentBlockHeight(userAddress);
+      await getBorrowerInfo(userAddress);
+    } catch (error: any) {
+      toast({
+        title: "Error while loading data",
+        description: `${error.message}`,
+        variant: "destructive",
+      });
+    }
   };
 
   // Check if wallet was previously connected
@@ -425,14 +445,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           title: "Wallet Connected",
           description: `Connected to ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`,
         });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Connection Failed",
         description: "Failed to connect wallet. Please try again.",
         variant: "destructive",
       });
-      console.error("Failed to connect wallet:", error);
     } finally {
       setConnecting(false);
     }
@@ -447,6 +467,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       title: "Wallet Disconnected",
       description: "Your wallet has been disconnected.",
     });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const borrow = async (amount: number) => {
@@ -485,7 +506,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       functionArgs: [Cl.standardPrincipal(address!)],
       network: "testnet",
       postConditions: [condition],
-      postConditionMode: "allow",
+      postConditionMode: "deny",
     });
 
     reload();
@@ -499,7 +520,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         connecting,
         address,
         balance,
-        stxBalance,
         currentBlockHeight,
         isLoading,
         connectToWallet,

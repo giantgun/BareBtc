@@ -29,25 +29,25 @@ export function ActiveLoanCard() {
 
   const loanAmount = activeLoan.amount;
   const router = useRouter();
-  const interestRate = activeLoan.interestRate / 100;
+  const interestRate = (activeLoan.interestRate || 0) / 100;
   const totalDue = activeLoan.totalDue;
   const daysRemaining = Math.floor(
-    (timePerBlock * (activeLoan.dueBlock - currentBlockHeight)) /
+    (timePerBlock * (activeLoan.dueBlock!! - currentBlockHeight)) /
       (24 * 60 * 60),
   );
   const totalDays =
-    (timePerBlock * (activeLoan.dueBlock - activeLoan.issuedBlock)) /
+    (timePerBlock * (activeLoan.dueBlock!! - activeLoan.issuedBlock!)) /
     (24 * 60 * 60);
   const progress =
-    activeLoan.dueBlock < currentBlockHeight
+    activeLoan.dueBlock! < currentBlockHeight
       ? 100
       : ((totalDays - daysRemaining) / totalDays) * 100;
 
   const handleRepay = async () => {
-    if (balance < totalDue) {
+    if (balance! < totalDue!) {
       toast({
         title: "Insufficient Balance",
-        description: `You need ${totalDue.toPrecision(3)} sBTC to repay this loan.`,
+        description: `You need ${totalDue!.toPrecision(3)} sBTC to repay this loan.`,
         variant: "destructive",
       });
       return;
@@ -56,7 +56,7 @@ export function ActiveLoanCard() {
     setRepaying(true);
 
     try {
-      await repay(Math.round(totalDue * 100000000), address!);
+      await repay(Math.round(totalDue! * 100000000), address!);
       toast({
         title: "Repayment Successful",
         description: `Your have paid your loan of ${totalDue} sBTC successfully!`,
@@ -64,7 +64,6 @@ export function ActiveLoanCard() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push("/");
     } catch (error) {
-      console.error(error);
       toast({
         title: "Transaction Failed",
         description: "Failed to repay loan. Please try again.",
@@ -80,7 +79,7 @@ export function ActiveLoanCard() {
       <CardHeader>
         <CardTitle>Active Loan</CardTitle>
         <CardDescription>
-          {activeLoan.dueBlock < currentBlockHeight
+          {activeLoan.dueBlock! < currentBlockHeight
             ? "You have an outstanding loan!"
             : `Due in ${daysRemaining} days`}
         </CardDescription>
@@ -89,7 +88,7 @@ export function ActiveLoanCard() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">Loan Amount</div>
-            <div className="font-bold">{loanAmount.toPrecision(3)} sBTC</div>
+            <div className="font-bold">{loanAmount!.toPrecision(3)} sBTC</div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">Interest Rate</div>
@@ -98,7 +97,7 @@ export function ActiveLoanCard() {
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium">Total Due</div>
             <div className="font-bold text-orange-500 glow-text">
-              {totalDue.toPrecision(3)} sBTC
+              {totalDue!.toPrecision(3)} sBTC
             </div>
           </div>
           <div className="space-y-2">
@@ -108,7 +107,7 @@ export function ActiveLoanCard() {
                 <span>Loan Term Progress</span>
               </div>
               <div className="text-xs font-medium">
-                {activeLoan.dueBlock < currentBlockHeight
+                {activeLoan.dueBlock! < currentBlockHeight
                   ? `You have not paid your outstanding loan`
                   : `${daysRemaining} days left`}
               </div>
@@ -116,7 +115,7 @@ export function ActiveLoanCard() {
             <Progress
               value={progress}
               className={
-                activeLoan.dueBlock < currentBlockHeight
+                activeLoan.dueBlock! < currentBlockHeight
                   ? `h-2 overflow-hidden bg-secondary/50 bg-gradient-to-r from-orange-500 to-red-500`
                   : `h-2 overflow-hidden bg-secondary/50 bg-gradient-to-r from-yellow-500 to-orange-500`
               }

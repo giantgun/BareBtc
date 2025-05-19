@@ -20,6 +20,7 @@ import { useWallet } from "@/hooks/use-wallet";
 import { ConnectWallet } from "@/components/connect-wallet";
 import { CreditScoreGauge } from "@/components/credit-score-gauge";
 import { ActiveLoanCard } from "@/components/active-loan-card";
+import { Loading } from "./ui/loading";
 
 export function BorrowPage() {
   const {
@@ -38,15 +39,17 @@ export function BorrowPage() {
   const [step, setStep] = useState(1);
   const [hasActiveLoan, setHasActiveLoan] = useState(false);
 
-  const maxLoanAmount = loanElgibility.loanLimit;
+  const maxLoanAmount = loanElgibility.loanLimit || 0;
   const interestRate = loanElgibility.interestRate;
+  const loanAmount = activeLoan.amount || 0;
+  const contractBalance = poolInfo.contractBalance || 0;
 
   useEffect(() => {
-    setHasActiveLoan(activeLoan.amount > 0);
-  }, [activeLoan.amount]);
+    setHasActiveLoan(loanAmount > 0);
+  }, [loanAmount]);
 
   const handleBorrow = async () => {
-    if (amount[0] > poolInfo.contractBalance) {
+    if (amount[0] > contractBalance) {
       toast({
         title: "Insufficient Pool Balance",
         description: `${amount[0]}sBTC is not available at this time.`,
@@ -62,7 +65,6 @@ export function BorrowPage() {
         description: `The loan of ${amount[0]}sBTC has been accepted succesfully!`,
       });
     } catch (error: any) {
-      console.error(error);
       toast({
         title: "Transaction Failed",
         description: `${error.message}`,
@@ -96,7 +98,19 @@ export function BorrowPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          {hasActiveLoan ? (
+          {loanElgibility.loanLimit === null ? (
+            <Card className="web3-card">
+              <CardHeader>
+                <CardTitle>Loading Loan Information</CardTitle>
+                <CardDescription>
+                  Please wait while we fetch your loan details
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="py-12 flex justify-center">
+                <Loading variant="spinner" text="Loading loan information" />
+              </CardContent>
+            </Card>
+          ) : hasActiveLoan ? (
             <ActiveLoanCard />
           ) : (
             <Card className="web3-card">
@@ -148,7 +162,7 @@ export function BorrowPage() {
                         <div className="mt-2 text-sm space-y-1">
                           <div className="flex justify-between">
                             <span>Interest Rate:</span>
-                            <span>{interestRate.toFixed(1)}%</span>
+                            <span>{interestRate?.toFixed(1)}%</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Term Length:</span>
@@ -159,7 +173,7 @@ export function BorrowPage() {
                             <span>
                               {(
                                 amount[0] *
-                                (1 + interestRate / 100)
+                                (1 + interestRate! / 100)
                               ).toPrecision(3)}{" "}
                               sBTC
                             </span>
@@ -185,7 +199,7 @@ export function BorrowPage() {
                         <span className="text-sm font-medium">
                           Interest Rate:
                         </span>
-                        <span>{interestRate.toFixed(1)}%</span>
+                        <span>{interestRate?.toFixed(1)}%</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm font-medium">
@@ -198,7 +212,7 @@ export function BorrowPage() {
                           Total Repayment:
                         </span>
                         <span className="font-bold">
-                          {(amount[0] * (1 + interestRate / 100)).toPrecision(
+                          {(amount[0] * (1 + interestRate! / 100)).toPrecision(
                             3,
                           )}{" "}
                           sBTC
@@ -209,7 +223,7 @@ export function BorrowPage() {
                         <span>
                           {new Date(
                             Date.now() +
-                              loanElgibility.duration * 24 * 60 * 60 * 1000,
+                              loanElgibility.duration! * 24 * 60 * 60 * 1000,
                           ).toLocaleDateString()}
                         </span>
                       </div>
@@ -251,7 +265,7 @@ export function BorrowPage() {
                           Total Repayment:
                         </span>
                         <span className="font-bold">
-                          {(amount[0] * (1 + interestRate / 100)).toPrecision(
+                          {(amount[0] * (1 + interestRate! / 100)).toPrecision(
                             3,
                           )}{" "}
                           sBTC
@@ -332,23 +346,35 @@ export function BorrowPage() {
               <CardDescription>Your borrowing power</CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center py-6">
-              <CreditScoreGauge score={creditScore} />
+              {creditScore === null ? (
+                <Loading variant="bitcoin" text="Loading credit score" />
+              ) : (
+                <CreditScoreGauge score={creditScore} />
+              )}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <div className="w-full text-sm space-y-2">
-                <div className="flex justify-between">
-                  <span>Max Loan Amount:</span>
-                  <span className="font-medium">
-                    {maxLoanAmount.toPrecision(2)} sBTC
-                  </span>
+              {interestRate === null ? (
+                <Loading
+                  variant="dots"
+                  size="sm"
+                  text="Loading eligibility data"
+                />
+              ) : (
+                <div className="w-full text-sm space-y-2">
+                  <div className="flex justify-between">
+                    <span>Max Loan Amount:</span>
+                    <span className="font-medium">
+                      {maxLoanAmount.toPrecision(2)} sBTC
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Interest Rate:</span>
+                    <span className="font-medium">
+                      {interestRate.toFixed(1)}%
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>Interest Rate:</span>
-                  <span className="font-medium">
-                    {interestRate.toFixed(1)}%
-                  </span>
-                </div>
-              </div>
+              )}
             </CardFooter>
           </Card>
         </div>

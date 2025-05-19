@@ -81,11 +81,10 @@ export function WithdrawTab({
 
       // Call the onWithdraw callback if provided
       onWithdraw?.();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
       toast({
         title: "Transaction Failed",
-        description: "Failed to withdraw. Please try again.",
+        description: `${error.message}`,
         variant: "destructive",
       });
     } finally {
