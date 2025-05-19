@@ -2,7 +2,7 @@
 
 This is the frontend application for interacting with the [sBTC Lending Pool](https://github.com/giantgun/sbtc-pool) smart contract on the Stacks blockchain.
 
-Built with **Next.js** **Stacks.js**, this app allows users to:
+Built with **Next.js** and **Stacks.js**, this app allows users to:
 
 - Connect their Stacks wallet  
 - Supply sBTC to earn yield  
