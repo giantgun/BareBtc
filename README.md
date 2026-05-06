@@ -1,4 +1,18 @@
-# BaresBtc
+# 🏆 BaresBtc 
+### Winner of **Best Use of sBTC** @ Bitcoin 2025 Hackathon  
+
+🎥 **Demo Video:**  
+<br/>
+<br/>
+<div align="center">
+  <a href="https://youtu.be/r4yYqN6OevA">
+    <img src="https://img.youtube.com/vi/r4yYqN6OevA/maxresdefault.jpg" alt="BareBtc Demo" width="90%" />
+  </a>
+</div>
+<br/>
+<br/>
+
+---
 
 This is the frontend application for interacting with the [sBTC Lending Pool](https://github.com/giantgun/sbtc-pool) smart contract on the Stacks blockchain.
 
