@@ -5,8 +5,8 @@
 <br/>
 <br/>
 <div align="center">
-  <a href="https://youtu.be/HXsiokSswTQ">
-    <img src="https://img.youtube.com/vi/HXsiokSswTQ/maxresdefault.jpg" alt="BareBtc Demo" width="90%" />
+  <a href="https://youtu.be/r4yYqN6OevA">
+    <img src="https://img.youtube.com/vi/r4yYqN6OevA/maxresdefault.jpg" alt="BareBtc Demo" width="90%" />
   </a>
 </div>
 <br/>
