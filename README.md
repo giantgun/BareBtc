@@ -1,4 +1,4 @@
-# 🏆 BaresBtc 
+# 🏆 BareBtc 
 ### Winner of **Best Use of sBTC** @ Bitcoin 2025 Hackathon  
 
 🎥 **Demo Video:**  
